@@ -1,0 +1,6 @@
+packages: .
+
+benchmarks: True
+
+constraints:
+  , hasql ^>= 1.10

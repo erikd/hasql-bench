@@ -1,0 +1,82 @@
+cabal-version: 3.0
+name: hasql-bench
+version: 0.0.0.0
+category: Hasql, Database, PostgreSQL
+synopsis: Fast PostgreSQL driver with a flexible mapping API
+description:
+  A standalone benchmark for https://github.com/nikita-volkov/hasql
+
+homepage: https://github.com/nikita-volkov/hasql
+bug-reports: https://github.com/nikita-volkov/hasql/issues
+author: Nikita Volkov <nikita.y.volkov@mail.ru>
+maintainer: Nikita Volkov <nikita.y.volkov@mail.ru>
+copyright: (c) 2014, Nikita Volkov
+license: MIT
+license-file: LICENSE
+
+
+common base
+  default-language: Haskell2010
+  default-extensions:
+    ApplicativeDo
+    Arrows
+    BangPatterns
+    BlockArguments
+    ConstraintKinds
+    DataKinds
+    DefaultSignatures
+    DeriveAnyClass
+    DeriveFoldable
+    DeriveFunctor
+    DeriveGeneric
+    DeriveTraversable
+    DerivingVia
+    DuplicateRecordFields
+    EmptyDataDecls
+    FlexibleContexts
+    FlexibleInstances
+    FunctionalDependencies
+    GADTs
+    GeneralizedNewtypeDeriving
+    ImportQualifiedPost
+    LambdaCase
+    LiberalTypeSynonyms
+    MultiParamTypeClasses
+    MultiWayIf
+    NamedFieldPuns
+    NoImplicitPrelude
+    NoMonomorphismRestriction
+    NumericUnderscores
+    OverloadedStrings
+    PatternGuards
+    QuasiQuotes
+    RankNTypes
+    RecordWildCards
+    RoleAnnotations
+    ScopedTypeVariables
+    StandaloneDeriving
+    StrictData
+    TupleSections
+    TypeApplications
+    TypeFamilies
+    TypeOperators
+    ViewPatterns
+
+common executable
+  import: base
+  ghc-options:
+    -O2
+    -threaded
+    -with-rtsopts=-N
+    -rtsopts
+    -funbox-strict-fields
+
+benchmark benchmarks
+  import: executable
+  type: exitcode-stdio-1.0
+  hs-source-dirs: src/benchmarks
+  main-is: Main.hs
+  build-depends:
+    criterion >=1.6 && <2,
+    hasql,
+    rerebase <2,
