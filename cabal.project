@@ -2,5 +2,16 @@ packages: .
 
 benchmarks: True
 
-constraints:
-  , hasql ^>= 1.10
+
+-- Hasql 1.9.*
+-- constraints: hasql ^>= 1.9
+
+
+-- Hasql 1.10.*
+-- constraints: hasql ^>= 1.10
+
+-- Hasql from https://github.com/nikita-volkov/hasql/pull/305
+-- source-repository-package
+--   type: git
+--   location: https://github.com/nikita-volkov/hasql/
+--   tag: 2fb41bda9826fd7799296851f37fdf79d4d352f0
