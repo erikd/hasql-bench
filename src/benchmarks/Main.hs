@@ -5,7 +5,9 @@ import Criterion
 import Criterion.Main
 import Hasql.Connection qualified as A
 import Hasql.Decoders qualified as D
+#if MIN_VERSION_hasql (1,10,0)
 import Hasql.Pipeline qualified as E
+#endif
 import Hasql.Session qualified as B
 import Hasql.Statement qualified as C
 import Prelude
@@ -23,9 +25,13 @@ main =
         [ sessionBench "largeResultInVector" sessionWithSingleLargeResultInVector,
           sessionBench "largeResultInList" sessionWithSingleLargeResultInList,
           sessionBench "manyLargeResults" sessionWithManyLargeResults,
+#if MIN_VERSION_hasql (1,10,0)
           sessionBench "manyLargeResultsViaPipeline" sessionWithManyLargeResultsViaPipeline,
+#endif
           sessionBench "manySmallResults" sessionWithManySmallResults,
+#if MIN_VERSION_hasql (1,10,0)
           sessionBench "manySmallResultsViaPipeline" sessionWithManySmallResultsViaPipeline,
+#endif
           -- Benchmarks targeting the per-statement pipeline overhead introduced in 1.10.
           --
           -- Session.statement is now routed through pipeline mode even for individual
@@ -37,11 +43,17 @@ main =
           bgroup
             "singleStatementOverhead"
             [ sessionBench "1-sequential" sessionWith1SmallResult,
+#if MIN_VERSION_hasql (1,10,0)
               sessionBench "1-pipeline" sessionWith1SmallResultViaPipeline,
+#endif
               sessionBench "10-sequential" sessionWith10SmallResults,
+#if MIN_VERSION_hasql (1,10,0)
               sessionBench "10-pipeline" sessionWith10SmallResultsViaPipeline,
-              sessionBench "100-sequential" sessionWithManySmallResults,
-              sessionBench "100-pipeline" sessionWithManySmallResultsViaPipeline
+#endif
+              sessionBench "100-sequential" sessionWithManySmallResults
+#if MIN_VERSION_hasql (1,10,0)
+              , sessionBench "100-pipeline" sessionWithManySmallResultsViaPipeline
+#endif
             ]
         ]
       where
@@ -59,17 +71,21 @@ sessionWith1SmallResult :: B.Session (Int64, Int64)
 sessionWith1SmallResult =
   B.statement () statementWithSingleRow
 
+#if MIN_VERSION_hasql (1,10,0)
 sessionWith1SmallResultViaPipeline :: B.Session (Int64, Int64)
 sessionWith1SmallResultViaPipeline =
   B.pipeline (E.statement () statementWithSingleRow)
+#endif
 
 sessionWith10SmallResults :: B.Session [(Int64, Int64)]
 sessionWith10SmallResults =
   replicateM 10 (B.statement () statementWithSingleRow)
 
+#if MIN_VERSION_hasql (1,10,0)
 sessionWith10SmallResultsViaPipeline :: B.Session [(Int64, Int64)]
 sessionWith10SmallResultsViaPipeline =
   B.pipeline (replicateM 10 (E.statement () statementWithSingleRow))
+#endif
 
 sessionWithSingleLargeResultInVector :: B.Session (Vector (Int64, Int64))
 sessionWithSingleLargeResultInVector =
@@ -87,6 +103,7 @@ sessionWithManySmallResults :: B.Session [(Int64, Int64)]
 sessionWithManySmallResults =
   replicateM 100 (B.statement () statementWithSingleRow)
 
+#if MIN_VERSION_hasql (1,10,0)
 sessionWithManyLargeResultsViaPipeline :: B.Session [Vector (Int64, Int64)]
 sessionWithManyLargeResultsViaPipeline =
   B.pipeline (replicateM 100 (E.statement () statementWithManyRowsInVector))
@@ -94,6 +111,7 @@ sessionWithManyLargeResultsViaPipeline =
 sessionWithManySmallResultsViaPipeline :: B.Session [(Int64, Int64)]
 sessionWithManySmallResultsViaPipeline =
   B.pipeline (replicateM 100 (E.statement () statementWithSingleRow))
+#endif
 
 -- * Statements
 
